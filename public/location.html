@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="index-style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <title>Alc navigator</title>
+    <style>
+    .profile {
+    padding: 20px;
+    margin-top: 100px;
+    text-align: center;
+    align-self: center;
+}
+* {
+    box-sizing: border-box;
+    scroll-behavior: smooth;
+}
+body {
+    margin: 0;
+    padding: 0;
+    display: block;
+    justify-content: center;
+    align-items: center;
+    background-image: linear-gradient(to bottom,  rgb(224, 245, 198), rgba(175, 180, 168, 0.904));
+    font-family: serif;
+}
+#header {
+    width: 100%;
+    background-color:transparent;
+    transition: background-color 2.0s ease;
+    
+}
+footer p {
+    text-align: center;
+    margin-top: 20px;
+}
+.socials {
+    display: flex;
+    justify-content: center;
+    gap: 30px; 
+    margin-top: 20px;
+    cursor: pointer;
+}
+.label {
+  position: relative;
+  text-align: center;
+  background-color: white;
+  width: 10%;
+  margin-left: 500px;
+  margin-top: -90px;
+}
+.aboutText p::first-letter {
+    font-size: 70px;
+    color: rgb(135, 241, 135);
+    margin-top: 4px;
+}
+.page {
+            opacity: 0;
+            transition: opacity 0.5s ease;
+            display: none; /* Initially hidden */
+        }
+
+        .page.active {
+            opacity: 1;
+            display: block; /* Show active page */
+        }
+      
+    </style>
+</head>
+<body>
+
+    <!-- Navbar -->
+    <nav class="fixed top-0 left-0 h-16 z-10 shadow-lg" id="header">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between items-center h-16">
+          <div class="flex-shrink-0">
+            <a><img class="text-2xl font-bold w-40" src="Alc nav logo.png"></a>
+          </div>
+          <div class="md:hidden flex items-center">
+            <button id="menu-btn" class="text-gray-700 focus:outline-none focus:ring">
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+    </nav>
+    <main>
+         <!-- Location Map -->
+          <a href="index.html"><i class="fa-solid fa-backward mt-16 p-8"> back</i></a>
+        <div class="container mx-auto my-8 p-4 mt-2">
+          <h2 class="text-2xl font-semibold text-green-700 mb-4">Select Your Location</h2>
+          <form id="locationForm" class="md:flex gap-4">
+              <!-- State Dropdown -->
+              <select id="stateSelect" class="p-2 border border-gray-300 rounded">
+                  <option value="">Select State</option>
+                  <option value="Abia">Abia</option><option value="Adamawa">Adamawa</option><option value="Akwa-Ibom">Akwa-Ibom</option>
+                  <option value="Anambra">Anambra</option><option value="Bauchi">Bauchi</option><option value="Bayelsa">Bayelsa</option>
+                  <option value="Benue">Benue</option><option value="Borno">Borno</option><option value="Cross-River">Cross-River</option>
+                  <option value="Delta">Delta</option><option value="Ebonyi">Ebonyi</option><option value="Edo">Edo</option>
+                  <option value="Ekiti">Ekiti</option><option value="Enugu">Enugu</option><option value="Gombe">Gombe</option>
+                  <option value="Imo">Imo</option><option value="Jigawa">Jigawa</option><option value="Kaduna">Kaduna</option>
+                  <option value="Kano">Kano</option><option value="Katsina">Katsina</option><option value="Kebbi">Kebbi</option>
+                  <option value="Kogi">Kogi</option><option value="Kwara">Kwara</option><option value="Lagos">Lagos</option>
+                  <option value="Nasarawa">Nasarawa</option><option value="Niger">Niger</option><option value="Ogun">Ogun</option>
+                  <option value="Ondo">Ondo</option><option value="Osun">Osun</option><option value="Oyo">Oyo</option>
+                  <option value="Plateau">Plateau</option><option value="Rivers">Rivers</option><option value="Sokoto">Sokoto</option>
+                  <option value="Taraba">Taraba</option><option value="Yobe">Yobe</option><option value="Zamfara">Zamfara</option>
+                  <option value="FCT">FCT</option>
+              </select>
+  
+              <!-- LGA Dropdown -->
+              <select id="lgaSelect" class="p-2 border border-gray-300 rounded">
+                  <option value="">Select Local Government Area</option>
+                  <!-- LGA options would change based on the selected state -->
+              </select>
+          </form>
+        </div>
+     
+      <div class=" container mx-auto my-2 p-4">
+          <div class=" h-96 rounded-lg overflow-hidden shadow-lg">
+              <div id="map" class="w-full h-full" loading="lazy"></div>
+          </div>
+        </div>
+      <!-- ALC Details (Dynamic) -->
+      <div class="container mx-auto my-8 p-4">
+          <div id="centerDetails" class="bg-white shadow-lg rounded-lg p-6 hidden">
+              <h3 class="text-xl font-semibold text-green-700" id="centerName"></h3>
+              <p class="text-gray-600 mt-2" id="centerAddress"></p>
+              <p class="text-gray-600" id="centerPhone"></p>
+          </div>
+      </div>
+        </main>
+    <footer>
+        <hr>
+        <p>Follow us:</p>
+        <div class="socials text-green-700">
+            <i class="fa-brands fa-github"></i>
+            <i class="fa-brands fa-square-whatsapp"></i>
+            <i class="fa-regular fa-paper-plane"></i>
+            <i class="fa-brands fa-facebook"></i>
+            <i class="fa-brands fa-square-instagram"></i>
+            <i class="fa-brands fa-square-x-twitter"></i>
+            </div>
+        <p>Alc navigator for 3MTT <br> All rights reserved &copy;2024</p>
+      </footer>
+    
+              <!-- Leaflet JS -->
+        <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+        <script>
+          // Mobile menu toggle
+          const menuBtn = document.getElementById('menu-btn');
+          const menu = document.getElementById('menu');
+      
+          menuBtn.addEventListener('click', () => {
+            menu.classList.toggle('hidden');
+          });
+    
+          
+        //   header color transform
+        window.onscroll = function() {
+        const header = document.getElementById('header');
+        const scrollPosition = window.scrollY;
+    
+        if (scrollPosition > 200) {
+            header.style.backgroundColor = 'rgba(175, 180, 168, 0.904)';
+        } else {
+            header.style.backgroundColor = 'transparent';
+        }
+    };
+    // page switch
+    function showPage(pageId) {
+                // Get all page elements
+                const pages = document.querySelectorAll('.page');
+                
+                // Hide all pages and remove the active class
+                pages.forEach(page => page.classList.remove('active'));
+    
+                // Display the selected page by adding the active class
+                const newPage = document.getElementById(pageId);
+                newPage.classList.add('active');
+                setTimeout(() => {
+            newPage.classList.add('active');
+        }, 10); // Small delay to trigger the transition
+
+        // Scroll to the top of the page
+        window.scrollTo(0, 0);
+            }
+            // ALC locations with latitude and longitude for each LGA
+            const alcs = {
+                Lagos: {
+                    "Ikeja": { lat: 6.601838, lng: 3.351486, address: "123 Ikeja Rd, Lagos", phone: "(234) 123-4567" },
+                    "Ikorodu": { lat: 6.6194, lng: 3.5089, address: "45 Ikorodu Rd, Lagos", phone: "(234) 123-4568" },
+                    "Lagos Mainland": { lat: 6.5474, lng: 3.3662, address: "67 Lagos Mainland Rd, Lagos", phone: "(234) 123-4569" },
+                    "Yaba": { lat: 6.499153928279972, lng: 3.3790120362497875, address: "GOMYCODE, 230 Herbert Macaulay Wy, Alagomeji-Yaba, Lagos 101245, Lagos", phone: "(234) 123-4569" },
+              
+                },
+                FCT: {
+                    "Head Office": { lat: 9.038248412662865, lng: 7.501906242448621, address: "No. 28, Port Harcourt Crescent, Off Gimbiya Street, P.M.B 564, Area 11 Garki, Abuja, Nigeria", phone: "(234) 816-840-1851" },
+                    "Central Area": { lat: 9.05785, lng: 7.49508, address: "Plot 123 Central Area, Abuja", phone: "(234) 987-6543" },
+                    "Wuse": { lat: 9.0499, lng: 7.4879, address: "89 Wuse Rd, Abuja", phone: "(234) 987-6544" },
+                    
+                },
+                Kano: {
+                    "Nasarawa": { lat: 12.0022, lng: 8.59195, address: "78 Bompai Rd, Kano", phone: "(234) 345-6789" },
+                    "Kano Municipal": { lat: 12.0213, lng: 8.5143, address: "45 Kano Rd, Kano", phone: "(234) 345-6790" },
+                    
+                },
+                Rivers: {
+                    "Port Harcourt": { lat: 4.8151, lng: 7.0499, address: "22 Port Harcourt Rd, Rivers", phone: "(234) 567-8901" },
+                    "Obio-Akpor": { lat: 4.7962, lng: 7.0140, address: "90 Obio Rd, Rivers", phone: "(234) 567-8902" },
+                    
+                },
+                Oyo: {
+                  "Ibadan": { lat: 7.418499605038294, lng: 3.9009224072883777, address: "Educational Advancement learning Center, Plot 4, Independence Layout By Housing Roundabout Bodija Estate Ibadan", phone: "(234) 803 123 1234" },
+                  "Ijebu Ode": { lat: 6.8255, lng: 3.9399, address: "45 Ijebu Rd, Oyo", phone: "(234) 678-9013" },
+                  "Oyo": { lat: 7.0820, lng: 3.8437, address: "67 Oyo Rd, Oyo", phone: "(234) 678-9014" },
+                },
+                Kaduna: {
+                  "Kaduna": { lat: 10.547930256118365, lng: 7.444394782538817, address: "LEA Pimary school, unguwar sarki, Kaduna ", phone: "(234) " },
+                  "Ijebu Ode": { lat: 6.8255, lng: 3.9399, address: "45 Ijebu Rd, Oyo", phone: "(234) 678-9013" },
+                  "Oyo": { lat: 7.0820, lng: 3.8437, address: "67 Oyo Rd, Oyo", phone: "(234) 678-9014" },
+                },
+            };
+     // Initialize Leaflet map centered on Nigeria
+     const map = L.map('map').setView([9.0820, 8.6753], 6); // Centered on Nigeria
+    
+    // Add OpenStreetMap tiles
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution: '© OpenStreetMap contributors'
+    }).addTo(map);
+    
+    // Marker for selected office location
+    let marker = L.marker([0, 0], { draggable: false }).addTo(map).setOpacity(0);
+    
+    // Populate LGA dropdown based on selected state
+    document.getElementById("stateSelect").addEventListener("change", function() {
+        const state = this.value;
+        const lgaSelect = document.getElementById("lgaSelect");
+        lgaSelect.innerHTML = '<option value="">Select Local Government Area</option>';
+        
+        if (state && alcs[state]) {
+            Object.keys(alcs[state]).forEach(lga => {
+                const option = document.createElement("option");
+                option.value = lga;
+                option.textContent = lga;
+                lgaSelect.appendChild(option);
+            });
+        }
+    });
+    
+    // Update map and details based on selected LGA
+    document.getElementById("lgaSelect").addEventListener("change", function() {
+        const state = document.getElementById("stateSelect").value;
+        const lga = this.value;
+        
+        if (state && lga && alcs[state][lga]) {
+            const { lat, lng, address, phone } = alcs[state][lga];
+            
+            // Move map center and update marker position
+            map.setView([lat, lng], 14);
+            marker.setLatLng([lat, lng]).setOpacity(1);
+    
+            // Update center details
+            document.getElementById("centerName").textContent = `${lga} ALC, ${state}`;
+            document.getElementById("centerAddress").textContent = address;
+            document.getElementById("centerPhone").textContent = `Phone: ${phone}`;
+            document.getElementById("centerDetails").classList.remove("hidden");
+        }
+    });
+        </script>
+</body>
+</html>
